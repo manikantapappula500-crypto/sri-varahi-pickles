@@ -7,15 +7,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Database configuration
 const dbConfig = {
-    user: process.env.DB_USER || 'sa',
-    password: process.env.DB_PASSWORD || 'Mani@#789123',
-    server: process.env.DB_SERVER || 'DESKTOP-SN90TT1',
-    database: 'VAARAHI',
+    user: process.env.DB_USER || 'SVP',
+    password: process.env.DB_PASSWORD || 'Vaarahi@#789123',
+    server: process.env.DB_SERVER || 'mysqldbserver-789.database.windows.net',
+    database: 'vaarahi-sql-db',
     options: {
-        encrypt: false,
-        trustServerCertificate: true
+        encrypt: true,
+        trustServerCertificate: false
     }
 };
 
