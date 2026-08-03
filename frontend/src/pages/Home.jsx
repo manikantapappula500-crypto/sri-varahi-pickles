@@ -26,7 +26,7 @@ export default function Home() {
     const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
     setCart(savedCart);
 
-    axios.get('http://localhost:5000/api/products')
+    axios.get(`${import.meta.env.VITE_API_URL || 'https://sri-varahi-pickles.onrender.com'}/api/products`)
       .then(response => {
         setProducts(response.data);
         setFilteredProducts(response.data);
@@ -37,6 +37,7 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+
 
   // Filter logic
   useEffect(() => {
