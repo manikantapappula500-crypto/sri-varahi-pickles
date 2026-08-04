@@ -26,7 +26,7 @@ export default function Home() {
     const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
     setCart(savedCart);
 
-    axios.get(`${import.meta.env.VITE_API_URL || 'https://sri-varahi-pickles.onrender.com'}/api/products`)
+    axios.get(`${import.meta.env.VITE_API_URL || 'node '}/api/products`)
       .then(response => {
         setProducts(response.data);
         setFilteredProducts(response.data);
@@ -37,7 +37,6 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
-
 
   // Filter logic
   useEffect(() => {
@@ -137,7 +136,7 @@ export default function Home() {
             style={styles.logo} 
           />
           <div>
-            <h1 style={styles.brandTitle}>VAARAHI PICKELS</h1>
+            <h1 style={styles.brandTitle}>SRI VAARAHI PICKELS</h1>
             <p style={styles.brandSubtitle}>Artisanal Heritage</p>
           </div>
         </div>
