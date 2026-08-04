@@ -137,7 +137,7 @@ export default function Home() {
             style={styles.logo} 
           />
           <div>
-            <h1 style={styles.brandTitle}>SRI VAARAHI PICKELS</h1>
+            <h1 style={styles.brandTitle}>VAARAHI PICKELS</h1>
             <p style={styles.brandSubtitle}>Artisanal Heritage</p>
           </div>
         </div>

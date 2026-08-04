@@ -15,14 +15,30 @@ const dbConfig = {
     options: {
         encrypt: true,
         trustServerCertificate: false
+    },
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
     }
 };
+
+// Global pool initialization helper
+let poolPromise = sql.connect(dbConfig)
+    .then(pool => {
+        console.log('Connected to Azure SQL Database successfully!');
+        return pool;
+    })
+    .catch(err => {
+        console.error('Database Connection Failed! Bad Config: ', err);
+        throw err;
+    });
 
 // 1. API Endpoint to fetch active products catalog
 app.get('/api/products', async (req, res) => {
     try {
-        await sql.connect(dbConfig);
-        const result = await sql.query(`
+        const pool = await poolPromise;
+        const result = await pool.request().query(`
             SELECT p.Id, p.Name, p.Description, p.Weight, p.Price, p.StockQuantity, p.ImageUrl, c.Name AS CategoryName
             FROM Products p
             INNER JOIN Categories c ON p.CategoryId = c.Id
@@ -50,8 +66,8 @@ app.get('/api/products', async (req, res) => {
 // 2. API Endpoint to fetch categories
 app.get('/api/categories', async (req, res) => {
     try {
-        await sql.connect(dbConfig);
-        const result = await sql.query(`SELECT Id, Name, Description, ImageUrl FROM Categories`);
+        const pool = await poolPromise;
+        const result = await pool.request().query(`SELECT Id, Name, Description, ImageUrl FROM Categories`);
         res.json(result.recordset);
     } catch (err) {
         console.error('Database error fetching categories:', err);
@@ -62,13 +78,10 @@ app.get('/api/categories', async (req, res) => {
 // 3. API Endpoint to place an order
 app.post('/api/orders', async (req, res) => {
     const { customer, items } = req.body; 
-    // customer: { fullName, email, phoneNumber, deliveryAddress, pincode }
-    // items: [{ productId, quantity, unitPrice }]
-
-    const pool = await sql.connect(dbConfig);
-    const transaction = new sql.Transaction(pool);
 
     try {
+        const pool = await poolPromise;
+        const transaction = new sql.Transaction(pool);
         await transaction.begin();
 
         // Step A: Insert Customer
@@ -118,7 +131,6 @@ app.post('/api/orders', async (req, res) => {
         await transaction.commit();
         res.status(201).json({ message: 'Order placed successfully!', orderId });
     } catch (err) {
-        await transaction.rollback();
         console.error('Order transaction error:', err);
         res.status(500).json({ error: 'Failed to place order' });
     }
