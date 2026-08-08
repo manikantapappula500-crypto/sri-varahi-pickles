@@ -10,7 +10,6 @@ const CATEGORIES = ['All', 'Veg Pickles', 'Non-Veg Pickles', 'Spices & Powders']
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [mobilePicklesDropdown, setMobilePicklesDropdown] = useState(false);
@@ -32,11 +31,9 @@ export default function Home() {
       .then(response => {
         setProducts(response.data);
         setFilteredProducts(response.data);
-        setLoading(false);
       })
       .catch(err => {
         console.error('Error fetching products:', err);
-        setLoading(false);
       });
   }, []);
 
@@ -107,17 +104,6 @@ export default function Home() {
   const totalCartItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  if (loading) {
-    return (
-      <div className="loader-container">
-        <div className="loader-content">
-          <span style={{ fontSize: '36px' }}>🥒</span>
-          <span>Crafting your artisanal experience...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="page-container">
       
@@ -137,7 +123,7 @@ export default function Home() {
             className="logo" 
           />
           <div>
-            <h1 className="brand-title">VAARAHI PICKELS</h1>
+            <h1 className="brand-title">SRI VAARAHI PICKELS</h1>
             <p className="brand-subtitle">Artisanal Heritage</p>
           </div>
         </div>
@@ -273,7 +259,7 @@ export default function Home() {
         {filteredProducts.length === 0 ? (
           <div className="no-results-box">
             <p style={{ fontSize: '28px', marginBottom: '8px' }}>🔍</p>
-            No culinary items found matching your filter.
+            Loading items or no culinary elements match your criteria...
           </div>
         ) : (
           <div className="product-grid">
@@ -290,6 +276,7 @@ export default function Home() {
                         src={product.imageUrl} 
                         alt={product.name} 
                         className="image-fit"
+                        loading="lazy"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     ) : (
