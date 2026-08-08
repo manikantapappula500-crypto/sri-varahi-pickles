@@ -12,7 +12,6 @@ export default function Home() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [mobilePicklesDropdown, setMobilePicklesDropdown] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -128,7 +127,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Clean Desktop Navigation Bar */}
+        {/* Desktop Navigation */}
         <nav className="desktop-nav">
           <Link to="/" className="desktop-nav-link">Home</Link>
           <Link to="/about" className="desktop-nav-link">About Us</Link>
@@ -161,68 +160,50 @@ export default function Home() {
         updateCartItemQty={updateCartItemQty}
       />
 
-      {/* Neat Mobile Slide-in Drawer Menu */}
+      {/* Redesigned Minimalist Mobile Full-Screen Overlay Menu */}
       {menuOpen && (
-        <div className="drawer-overlay" onClick={() => setMenuOpen(false)}>
-          <div className="menu-drawer-content" onClick={(e) => e.stopPropagation()}>
-            <div className="drawer-header">
-              <span className="drawer-brand-tag">🍽️ Sri Vaarahi Menu</span>
-              <button onClick={() => setMenuOpen(false)} className="close-button" aria-label="Close menu">✕</button>
+        <div className="mobile-fullscreen-menu" onClick={() => setMenuOpen(false)}>
+          <div className="mobile-menu-card" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-topbar">
+              <span className="mobile-menu-title">Menu Navigation</span>
+              <button onClick={() => setMenuOpen(false)} className="mobile-close-btn" aria-label="Close menu">✕</button>
             </div>
-            
-            <div className="drawer-links-container">
-              <Link to="/" onClick={() => setMenuOpen(false)} className="menu-link-item">
+
+            <div className="mobile-menu-links">
+              <Link to="/" onClick={() => setMenuOpen(false)} className="mobile-link-row">
                 <span>🏠 Home</span>
-                <span className="menu-arrow">›</span>
+                <span className="mobile-link-arrow">→</span>
               </Link>
-              <Link to="/about" onClick={() => setMenuOpen(false)} className="menu-link-item">
+              <Link to="/about" onClick={() => setMenuOpen(false)} className="mobile-link-row">
                 <span>📖 About Us</span>
-                <span className="menu-arrow">›</span>
+                <span className="mobile-link-arrow">→</span>
               </Link>
-              <Link to="/products" onClick={() => setMenuOpen(false)} className="menu-link-item">
+              <Link to="/products" onClick={() => setMenuOpen(false)} className="mobile-link-row">
                 <span>📦 All Products</span>
-                <span className="menu-arrow">›</span>
+                <span className="mobile-link-arrow">→</span>
               </Link>
-              
-              <div className="menu-dropdown-section">
-                <button 
-                  onClick={() => setMobilePicklesDropdown(!mobilePicklesDropdown)}
-                  className="dropdown-toggle-btn"
+              <Link to="/cart" onClick={() => setMenuOpen(false)} className="mobile-link-row">
+                <span>🛒 Shopping Bag ({totalCartItems})</span>
+                <span className="mobile-link-arrow">→</span>
+              </Link>
+            </div>
+
+            <div className="mobile-menu-divider"></div>
+
+            <div className="mobile-menu-section-title">Quick Pickles Filter</div>
+            <div className="mobile-category-chips">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    setMenuOpen(false);
+                  }}
+                  className={`mobile-chip ${selectedCategory === cat ? 'mobile-chip-active' : 'mobile-chip-inactive'}`}
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    🥒 Pickles Catalog
-                  </span>
-                  <span className="dropdown-indicator">{mobilePicklesDropdown ? '▲' : '▼'}</span>
+                  {cat}
                 </button>
-
-                {mobilePicklesDropdown && (
-                  <div className="dropdown-sub-menu">
-                    {CATEGORIES.map(cat => (
-                      <button
-                        key={cat}
-                        onClick={() => {
-                          setSelectedCategory(cat);
-                          setMenuOpen(false);
-                          setMobilePicklesDropdown(false);
-                        }}
-                        className="dropdown-sub-item"
-                        style={{
-                          backgroundColor: selectedCategory === cat ? '#fef3c7' : 'transparent',
-                          color: selectedCategory === cat ? '#78350f' : '#44403c',
-                          fontWeight: selectedCategory === cat ? '700' : '500'
-                        }}
-                      >
-                        • {cat}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <Link to="/cart" onClick={() => setMenuOpen(false)} className="menu-link-item">
-                <span>🛒 View Full Cart</span>
-                <span className="menu-arrow">›</span>
-              </Link>
+              ))}
             </div>
           </div>
         </div>
@@ -344,7 +325,7 @@ export default function Home() {
         )}
       </main>
 
-      {/* Clean Mobile Sticky Bottom Navigation Bar */}
+      {/* Mobile Sticky Bottom Navigation Bar */}
       <nav className="mobile-bottom-nav">
         <Link to="/" className="bottom-nav-item bottom-nav-item-active">
           <span style={{ fontSize: '18px' }}>🏠</span>
