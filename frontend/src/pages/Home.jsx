@@ -123,22 +123,22 @@ export default function Home() {
             className="logo" 
           />
           <div>
-            <h1 className="brand-title">SRI VAARAHI PICKELS</h1>
+            <h1 className="brand-title">VAARAHI PICKELS</h1>
             <p className="brand-subtitle">Artisanal Heritage</p>
           </div>
         </div>
 
-        {/* Desktop Navbar View */}
+        {/* Clean Desktop Navigation Bar */}
         <nav className="desktop-nav">
-          <Link to="/" className="desktop-nav-link">🏠 Home</Link>
-          <Link to="/about" className="desktop-nav-link">📖 About Us</Link>
-          <Link to="/products" className="desktop-nav-link">📦 Products</Link>
-          <a href="#catalog" className="desktop-nav-link">🥒 Pickles Catalog</a>
-          <Link to="/cart" className="desktop-nav-link">🛒 Full Cart</Link>
+          <Link to="/" className="desktop-nav-link">Home</Link>
+          <Link to="/about" className="desktop-nav-link">About Us</Link>
+          <Link to="/products" className="desktop-nav-link">Products</Link>
+          <a href="#catalog" className="desktop-nav-link">Catalog</a>
+          <Link to="/cart" className="desktop-nav-link">Cart</Link>
         </nav>
 
         <div className="header-actions">
-          <button onClick={() => setCartOpen(true)} className="cart-button">
+          <button onClick={() => setCartOpen(true)} className="cart-button" aria-label="Cart">
             🛒 <span className="cart-badge-desktop">{totalCartItems}</span>
           </button>
           
@@ -161,27 +161,38 @@ export default function Home() {
         updateCartItemQty={updateCartItemQty}
       />
 
-      {/* Mobile Top-Right Hamburger Drawer Menu */}
+      {/* Neat Mobile Slide-in Drawer Menu */}
       {menuOpen && (
         <div className="drawer-overlay" onClick={() => setMenuOpen(false)}>
           <div className="menu-drawer-content" onClick={(e) => e.stopPropagation()}>
             <div className="drawer-header">
-              <h3 className="drawer-title">Navigation Menu</h3>
-              <button onClick={() => setMenuOpen(false)} className="close-button">✕</button>
+              <span className="drawer-brand-tag">🍽️ Sri Vaarahi Menu</span>
+              <button onClick={() => setMenuOpen(false)} className="close-button" aria-label="Close menu">✕</button>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '20px' }}>
-              <Link to="/" onClick={() => setMenuOpen(false)} className="menu-link">🏠 Home</Link>
-              <Link to="/about" onClick={() => setMenuOpen(false)} className="menu-link">📖 About Us</Link>
-              <Link to="/products" onClick={() => setMenuOpen(false)} className="menu-link">📦 Products</Link>
+            <div className="drawer-links-container">
+              <Link to="/" onClick={() => setMenuOpen(false)} className="menu-link-item">
+                <span>🏠 Home</span>
+                <span className="menu-arrow">›</span>
+              </Link>
+              <Link to="/about" onClick={() => setMenuOpen(false)} className="menu-link-item">
+                <span>📖 About Us</span>
+                <span className="menu-arrow">›</span>
+              </Link>
+              <Link to="/products" onClick={() => setMenuOpen(false)} className="menu-link-item">
+                <span>📦 All Products</span>
+                <span className="menu-arrow">›</span>
+              </Link>
               
-              <div>
+              <div className="menu-dropdown-section">
                 <button 
                   onClick={() => setMobilePicklesDropdown(!mobilePicklesDropdown)}
                   className="dropdown-toggle-btn"
                 >
-                  <span>🥒 Pickles Catalog</span>
-                  <span>{mobilePicklesDropdown ? '▲' : '▼'}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    🥒 Pickles Catalog
+                  </span>
+                  <span className="dropdown-indicator">{mobilePicklesDropdown ? '▲' : '▼'}</span>
                 </button>
 
                 {mobilePicklesDropdown && (
@@ -196,7 +207,8 @@ export default function Home() {
                         }}
                         className="dropdown-sub-item"
                         style={{
-                          color: selectedCategory === cat ? '#78350f' : '#57534e',
+                          backgroundColor: selectedCategory === cat ? '#fef3c7' : 'transparent',
+                          color: selectedCategory === cat ? '#78350f' : '#44403c',
                           fontWeight: selectedCategory === cat ? '700' : '500'
                         }}
                       >
@@ -207,7 +219,10 @@ export default function Home() {
                 )}
               </div>
 
-              <Link to="/cart" onClick={() => setMenuOpen(false)} className="menu-link">🛒 Full Cart View</Link>
+              <Link to="/cart" onClick={() => setMenuOpen(false)} className="menu-link-item">
+                <span>🛒 View Full Cart</span>
+                <span className="menu-arrow">›</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -259,7 +274,7 @@ export default function Home() {
         {filteredProducts.length === 0 ? (
           <div className="no-results-box">
             <p style={{ fontSize: '28px', marginBottom: '8px' }}>🔍</p>
-            Loading items or no culinary elements match your criteria...
+            No culinary items found matching your criteria.
           </div>
         ) : (
           <div className="product-grid">
@@ -329,23 +344,23 @@ export default function Home() {
         )}
       </main>
 
-      {/* Mobile Sticky Bottom Navigation Bar */}
+      {/* Clean Mobile Sticky Bottom Navigation Bar */}
       <nav className="mobile-bottom-nav">
-        <Link to="/" className="bottom-nav-item-active">
-          <span style={{ fontSize: '17px' }}>🏠</span>
+        <Link to="/" className="bottom-nav-item bottom-nav-item-active">
+          <span style={{ fontSize: '18px' }}>🏠</span>
           <span>Home</span>
         </Link>
         <a href="#catalog" className="bottom-nav-item">
-          <span style={{ fontSize: '17px' }}>🥒</span>
+          <span style={{ fontSize: '18px' }}>🥒</span>
           <span>Catalog</span>
         </a>
         <button onClick={() => setCartOpen(true)} className="bottom-nav-cart-btn">
-          <span style={{ fontSize: '17px' }}>🛒</span>
+          <span style={{ fontSize: '18px' }}>🛒</span>
           <span>Bag</span>
           {totalCartItems > 0 && <span className="bottom-nav-badge">{totalCartItems}</span>}
         </button>
         <button onClick={() => setMenuOpen(true)} className="bottom-nav-item">
-          <span style={{ fontSize: '17px' }}>☰</span>
+          <span style={{ fontSize: '18px' }}>☰</span>
           <span>Menu</span>
         </button>
       </nav>
