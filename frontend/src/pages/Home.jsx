@@ -123,7 +123,7 @@ export default function Home() {
             className="logo" 
           />
           <div>
-            <h1 className="brand-title">SRI VAARAHI PICKELS 1</h1>
+            <h1 className="brand-title">VAARAHI PICKELS</h1>
             <p className="brand-subtitle">Artisanal Heritage</p>
           </div>
         </div>
