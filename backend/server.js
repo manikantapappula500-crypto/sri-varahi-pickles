@@ -75,16 +75,20 @@ app.get('/api/categories', async (req, res) => {
     }
 });
 
-// 3. API Endpoint to place an order
-app.post('/api/orders', async (req, res) => {
+// 3. API Endpoint to place an order & save customer into Customers table
+app.post('/api/orders/checkout', async (req, res) => {
     const { customer, items } = req.body; 
+
+    if (!customer || !items || items.length === 0) {
+        return res.status(400).json({ error: 'Invalid order payload' });
+    }
 
     try {
         const pool = await poolPromise;
         const transaction = new sql.Transaction(pool);
         await transaction.begin();
 
-        // Step A: Insert Customer
+        // Step A: Insert Customer matching your exact [dbo].[Customers] table schema
         const customerRequest = new sql.Request(transaction);
         customerRequest.input('FullName', sql.NVarChar, customer.fullName);
         customerRequest.input('Email', sql.NVarChar, customer.email);
@@ -93,14 +97,14 @@ app.post('/api/orders', async (req, res) => {
         customerRequest.input('Pincode', sql.NVarChar, customer.pincode);
 
         const customerResult = await customerRequest.query(`
-            INSERT INTO Customers (FullName, Email, PhoneNumber, DeliveryAddress, Pincode)
+            INSERT INTO [dbo].[Customers] (FullName, Email, PhoneNumber, DeliveryAddress, Pincode)
             OUTPUT INSERTED.Id
             VALUES (@FullName, @Email, @PhoneNumber, @DeliveryAddress, @Pincode)
         `);
         const customerId = customerResult.recordset[0].Id;
 
-        // Step B: Calculate Total Amount
-        const totalAmount = items.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+        // Step B: Calculate Total Amount (using 'price' sent from React cart items)
+        const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
         // Step C: Insert Order
         const orderRequest = new sql.Request(transaction);
@@ -118,9 +122,9 @@ app.post('/api/orders', async (req, res) => {
         for (let item of items) {
             const itemRequest = new sql.Request(transaction);
             itemRequest.input('OrderId', sql.Int, orderId);
-            itemRequest.input('ProductId', sql.Int, item.productId);
+            itemRequest.input('ProductId', sql.Int, item.id); // Matches item.id from frontend
             itemRequest.input('Quantity', sql.Int, item.quantity);
-            itemRequest.input('UnitPrice', sql.Decimal(18, 2), item.unitPrice);
+            itemRequest.input('UnitPrice', sql.Decimal(18, 2), item.price); // Maps item.price to UnitPrice
 
             await itemRequest.query(`
                 INSERT INTO OrderItems (OrderId, ProductId, Quantity, UnitPrice)
@@ -129,7 +133,7 @@ app.post('/api/orders', async (req, res) => {
         }
 
         await transaction.commit();
-        res.status(201).json({ message: 'Order placed successfully!', orderId });
+        res.status(201).json({ message: 'Order placed successfully!', orderId, customerId });
     } catch (err) {
         console.error('Order transaction error:', err);
         res.status(500).json({ error: 'Failed to place order' });

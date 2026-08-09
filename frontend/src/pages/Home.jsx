@@ -17,7 +17,6 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  const [quantities, setQuantities] = useState({});
   const [cart, setCart] = useState([]);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -56,22 +55,13 @@ export default function Home() {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
-  const handleQuantityChange = (productId, delta, maxStock) => {
-    setQuantities(prev => {
-      const current = prev[productId] || 1;
-      const updated = current + delta;
-      if (updated < 1 || (maxStock && updated > maxStock)) return prev;
-      return { ...prev, [productId]: updated };
-    });
-  };
-
+  // Add product to cart (defaults quantity to 1 if new)
   const addToCart = (product) => {
-    const qty = quantities[product.id] || 1;
     let currentCart = [...cart];
-    
     const existingIndex = currentCart.findIndex(item => item.id === product.id);
+    
     if (existingIndex > -1) {
-      currentCart[existingIndex].quantity += qty;
+      currentCart[existingIndex].quantity += 1;
     } else {
       currentCart.push({
         id: product.id,
@@ -79,16 +69,36 @@ export default function Home() {
         price: product.price,
         weight: product.weight,
         imageUrl: product.imageUrl,
-        quantity: qty
+        quantity: 1
       });
     }
 
     saveAndSyncCart(currentCart);
     setCartOpen(true);
-    setToastMessage(`Added ${qty}x ${product.name} to cart!`);
+    setToastMessage(`Added 1x ${product.name} to cart!`);
     setTimeout(() => setToastMessage(''), 3000);
   };
 
+  // Directly adjust item quantity from the product card (+ / -)
+  const updateProductCardQty = (productId, delta, maxStock) => {
+    let currentCart = [...cart];
+    const index = currentCart.findIndex(item => item.id === productId);
+
+    if (index > -1) {
+      const newQty = currentCart[index].quantity + delta;
+
+      if (maxStock && newQty > maxStock) return; // Prevent exceeding stock
+
+      if (newQty <= 0) {
+        currentCart.splice(index, 1); // Remove item completely if qty hits 0
+      } else {
+        currentCart[index].quantity = newQty;
+      }
+      saveAndSyncCart(currentCart);
+    }
+  };
+
+  // Used by CartDrawer
   const updateCartItemQty = (id, delta) => {
     let currentCart = [...cart];
     const index = currentCart.findIndex(item => item.id === id);
@@ -264,7 +274,9 @@ export default function Home() {
         ) : (
           <div className="product-grid">
             {filteredProducts.map(product => {
-              const currentQty = quantities[product.id] || 1;
+              // Find exact matching item from cart state
+              const cartItem = cart.find(item => item.id === product.id);
+              const currentQty = cartItem ? cartItem.quantity : 0;
               const isOutOfStock = product.stockQuantity === 0;
 
               return (
@@ -304,22 +316,34 @@ export default function Home() {
                       <div className="price-counter-row">
                         <span className="product-price">₹{product.price}</span>
                         
-                        {!isOutOfStock && (
+                        {/* Only show counter if quantity is greater than 0 */}
+                        {!isOutOfStock && currentQty > 0 && (
                           <div className="card-counter-box">
-                            <button onClick={() => handleQuantityChange(product.id, -1)} className="card-counter-btn">-</button>
+                            <button onClick={() => updateProductCardQty(product.id, -1)} className="card-counter-btn">-</button>
                             <span style={{ padding: '0 6px', fontSize: '12px', fontWeight: 700 }}>{currentQty}</span>
-                            <button onClick={() => handleQuantityChange(product.id, 1, product.stockQuantity)} className="card-counter-btn">+</button>
+                            <button onClick={() => updateProductCardQty(product.id, 1, product.stockQuantity)} className="card-counter-btn">+</button>
                           </div>
                         )}
                       </div>
 
-                      <button 
-                        disabled={isOutOfStock}
-                        onClick={() => addToCart(product)} 
-                        className={`add-to-bag-btn ${isOutOfStock ? 'add-to-bag-disabled' : 'add-to-bag-active'}`}
-                      >
-                        {isOutOfStock ? 'Sold Out' : 'Add to Bag 🛒'}
-                      </button>
+                      {/* If quantity is 0, show standard Add to Bag. If > 0, hide or transform primary action button */}
+                      {currentQty === 0 ? (
+                        <button 
+                          disabled={isOutOfStock}
+                          onClick={() => addToCart(product)} 
+                          className={`add-to-bag-btn ${isOutOfStock ? 'add-to-bag-disabled' : 'add-to-bag-active'}`}
+                        >
+                          {isOutOfStock ? 'Sold Out' : 'Add to Bag 🛒'}
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => setCartOpen(true)}
+                          className="add-to-bag-btn add-to-bag-active"
+                          style={{ backgroundColor: '#047857' }}
+                        >
+                          View in Bag ({currentQty}) 🛒
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
