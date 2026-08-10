@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Checkout from './Checkout'; // Import the compact checkout modal
+import React from "react";
+import { Link } from "react-router-dom";
+import "./CartDrawer.css";
 
 export default function CartDrawer({
   isOpen,
@@ -10,79 +10,239 @@ export default function CartDrawer({
   subtotalPrice,
   updateCartItemQty
 }) {
-  const navigate = useNavigate();
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false); // State to open/close checkout modal
-
   if (!isOpen) return null;
 
+  const formatPrice = (value) => {
+    return Number(value || 0).toLocaleString("en-IN");
+  };
+
   return (
-    <>
-      <div className="drawer-overlay" onClick={onClose}>
-        <div className="drawer-content" onClick={(e) => e.stopPropagation()}>
-          <div className="drawer-header">
-            <h3 className="drawer-title">Your Shopping Bag ({totalCartItems})</h3>
-            <button onClick={onClose} className="close-button">✕</button>
+    <div className="cart-drawer-overlay" onClick={onClose}>
+
+      <aside
+        className="cart-drawer"
+        onClick={(e) => e.stopPropagation()}
+      >
+
+        {/* ================================
+            HEADER
+        ================================= */}
+
+        <div className="cart-drawer-header">
+
+          <div>
+            <h2>Your Shopping Bag</h2>
+
+            <span>
+              {totalCartItems}{" "}
+              {totalCartItems === 1 ? "item" : "items"}
+            </span>
           </div>
 
-          <div className="drawer-body">
-            {cart.length === 0 ? (
-              <div className="empty-cart">
-                <p className="empty-cart-icon">🛒</p>
-                Your bag is empty.<br />Explore our fresh pickle varieties!
-              </div>
-            ) : (
-              cart.map(item => (
-                <div key={item.id} className="cart-item-card">
-                  <div className="cart-item-thumb">
-                    {item.imageUrl ? (
-                      <img src={item.imageUrl} alt={item.name} className="image-fit" />
-                    ) : (
-                      <div className="fallback-emoji">🥒</div>
-                    )}
-                  </div>
-                  <div className="cart-item-details">
-                    <h5 className="cart-item-title">{item.name}</h5>
-                    <span className="cart-item-meta">{item.weight} • ₹{item.price}</span>
-                    <div className="cart-counter-row">
-                      <button onClick={() => updateCartItemQty(item.id, -1)} className="counter-btn">-</button>
-                      <span className="counter-value">{item.quantity}</span>
-                      <button onClick={() => updateCartItemQty(item.id, 1)} className="counter-btn">+</button>
-                    </div>
-                  </div>
-                  <div className="cart-item-total">
-                    <span className="cart-item-price">₹{item.price * item.quantity}</span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <button
+            type="button"
+            className="cart-drawer-close"
+            onClick={onClose}
+            aria-label="Close cart"
+          >
+            ✕
+          </button>
 
-          {cart.length > 0 && (
-            <div className="drawer-footer">
-              <div className="subtotal-row">
-                <span>Subtotal:</span>
-                <span className="subtotal-amount">₹{subtotalPrice}</span>
-              </div>
-              <button 
-  onClick={() => { 
-    onClose(); // First, close the Cart Drawer
-    setIsCheckoutOpen(true); // Then, open the Checkout Modal
-  }} 
-  className="checkout-btn"
->
-  Proceed to Checkout
-</button>
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* Render the compact checkout modal popup */}
-      <Checkout 
-        isOpen={isCheckoutOpen} 
-        onClose={() => setIsCheckoutOpen(false)} 
-        cart={cart} 
-      />
-    </>
+
+        {/* ================================
+            CART CONTENT
+        ================================= */}
+
+        <div className="cart-drawer-body">
+
+          {cart.length === 0 ? (
+
+            <div className="cart-empty">
+
+              <div className="cart-empty-icon">
+                🛒
+              </div>
+
+              <h3>
+                Your bag is empty
+              </h3>
+
+              <p>
+                Add your favourite homemade pickles
+                to get started.
+              </p>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="cart-continue-btn"
+              >
+                Explore Pickles
+              </button>
+
+            </div>
+
+          ) : (
+
+            <div className="cart-items">
+
+              {cart.map((item) => (
+
+                <div
+                  className="cart-drawer-item"
+                  key={item.id}
+                >
+
+                  {/* IMAGE */}
+
+                  <div className="cart-drawer-image">
+
+                    {item.imageUrl ? (
+
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                      />
+
+                    ) : (
+
+                      <span>🥒</span>
+
+                    )}
+
+                  </div>
+
+
+                  {/* DETAILS */}
+
+                  <div className="cart-drawer-details">
+
+                    <h4>
+                      {item.name}
+                    </h4>
+
+                    <p>
+                      {item.weight || "Pack"}
+                    </p>
+
+                    <strong>
+                      ₹{formatPrice(item.price)}
+                    </strong>
+
+
+                    {/* QUANTITY */}
+
+                    <div className="cart-quantity">
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateCartItemQty(
+                            item.id,
+                            -1
+                          )
+                        }
+                      >
+                        −
+                      </button>
+
+                      <span>
+                        {item.quantity}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateCartItemQty(
+                            item.id,
+                            1
+                          )
+                        }
+                      >
+                        +
+                      </button>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* TOTAL */}
+
+                  <div className="cart-drawer-item-total">
+
+                    ₹
+                    {formatPrice(
+                      Number(item.price) *
+                      Number(item.quantity)
+                    )}
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          )}
+
+        </div>
+
+
+        {/* ================================
+            FOOTER
+        ================================= */}
+
+        {cart.length > 0 && (
+
+          <div className="cart-drawer-footer">
+
+            <div className="cart-subtotal">
+
+              <div>
+                <span>
+                  Subtotal
+                </span>
+
+                <small>
+                  Delivery charges calculated at checkout
+                </small>
+              </div>
+
+              <strong>
+                ₹{formatPrice(subtotalPrice)}
+              </strong>
+
+            </div>
+
+
+            <Link
+              to="/checkout"
+              onClick={onClose}
+              className="cart-checkout-btn"
+            >
+              Proceed to Checkout
+              <span>→</span>
+            </Link>
+
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="cart-continue-shopping"
+            >
+              Continue Shopping
+            </button>
+
+          </div>
+
+        )}
+
+      </aside>
+
+    </div>
   );
 }
