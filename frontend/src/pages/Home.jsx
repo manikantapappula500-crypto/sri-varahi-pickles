@@ -55,7 +55,6 @@ export default function Home() {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
-  // Add product to cart (defaults quantity to 1 if new)
   const addToCart = (product) => {
     let currentCart = [...cart];
     const existingIndex = currentCart.findIndex(item => item.id === product.id);
@@ -79,7 +78,6 @@ export default function Home() {
     setTimeout(() => setToastMessage(''), 3000);
   };
 
-  // Directly adjust item quantity from the product card (+ / -)
   const updateProductCardQty = (productId, delta, maxStock) => {
     let currentCart = [...cart];
     const index = currentCart.findIndex(item => item.id === productId);
@@ -87,10 +85,10 @@ export default function Home() {
     if (index > -1) {
       const newQty = currentCart[index].quantity + delta;
 
-      if (maxStock && newQty > maxStock) return; // Prevent exceeding stock
+      if (maxStock && newQty > maxStock) return;
 
       if (newQty <= 0) {
-        currentCart.splice(index, 1); // Remove item completely if qty hits 0
+        currentCart.splice(index, 1);
       } else {
         currentCart[index].quantity = newQty;
       }
@@ -98,7 +96,6 @@ export default function Home() {
     }
   };
 
-  // Used by CartDrawer
   const updateCartItemQty = (id, delta) => {
     let currentCart = [...cart];
     const index = currentCart.findIndex(item => item.id === id);
@@ -115,7 +112,7 @@ export default function Home() {
   const subtotalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
-    <div className="page-container">
+    <div className="page-container full-width-layout">
       
       {/* Toast Notification */}
       {toastMessage && (
@@ -152,7 +149,6 @@ export default function Home() {
             🛒 <span className="cart-badge-desktop">{totalCartItems}</span>
           </button>
           
-          {/* Mobile Hamburger Button */}
           <button onClick={() => setMenuOpen(!menuOpen)} className="mobile-menu-button" aria-label="Menu">
             <span className="hamburger-bar"></span>
             <span className="hamburger-bar"></span>
@@ -249,7 +245,7 @@ export default function Home() {
       </section>
 
       {/* Main Catalog */}
-      <main id="catalog" className="main-container">
+      <main id="catalog" className="main-container full-width-container">
         
         <div className="filter-row">
           <div className="filter-pills-container">
@@ -274,7 +270,6 @@ export default function Home() {
         ) : (
           <div className="product-grid">
             {filteredProducts.map(product => {
-              // Find exact matching item from cart state
               const cartItem = cart.find(item => item.id === product.id);
               const currentQty = cartItem ? cartItem.quantity : 0;
               const isOutOfStock = product.stockQuantity === 0;
@@ -316,7 +311,6 @@ export default function Home() {
                       <div className="price-counter-row">
                         <span className="product-price">₹{product.price}</span>
                         
-                        {/* Only show counter if quantity is greater than 0 */}
                         {!isOutOfStock && currentQty > 0 && (
                           <div className="card-counter-box">
                             <button onClick={() => updateProductCardQty(product.id, -1)} className="card-counter-btn">-</button>
@@ -326,7 +320,6 @@ export default function Home() {
                         )}
                       </div>
 
-                      {/* If quantity is 0, show standard Add to Bag. If > 0, hide or transform primary action button */}
                       {currentQty === 0 ? (
                         <button 
                           disabled={isOutOfStock}

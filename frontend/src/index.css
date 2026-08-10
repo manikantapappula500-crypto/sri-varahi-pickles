@@ -109,3 +109,16 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+/* Remove all default padding and margins from the browser window */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden;
+  background-color: #f8fafc; /* Adjust to match your theme background */
+}

@@ -761,3 +761,64 @@
   font-size: 9px;
   font-weight: 800;
 }
+
+/* Reset body and root to ensure full bleed across the window */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Force the main page container to take 100% width with no margins */
+.page-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Make header stretch edge-to-edge with clean internal padding */
+.header {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 12px 24px !important;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Make hero section span edge-to-edge */
+.hero-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 40px 20px !important;
+  box-sizing: border-box;
+}
+
+/* Make catalog container span the full width smoothly */
+.main-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 24px !important;
+  box-sizing: border-box;
+}
+
+/* Ensure product grid accommodates full width cleanly */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.logo {
+  height: 50px; /* Adjust this value to make the logo larger or smaller */
+  width: auto;   /* Keeps the original image proportions intact */
+  object-fit: contain;
+}
