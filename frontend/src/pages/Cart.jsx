@@ -7,354 +7,377 @@ import "./Cart.css";
 
 export default function Cart() {
 
-  const [cart, setCart] = useState([]);
-
-  /* =====================================================
-     LOAD CART
-  ===================================================== */
-
-  useEffect(() => {
-
-    loadCart();
-
-    const handleCartUpdate = () => {
-      loadCart();
-    };
-
-    window.addEventListener(
-      "cartUpdated",
-      handleCartUpdate
-    );
-
-    return () => {
-      window.removeEventListener(
-        "cartUpdated",
-        handleCartUpdate
-      );
-    };
-
-  }, []);
+    const [cart, setCart] = useState([]);
 
 
-  const loadCart = () => {
+    /* =====================================================
+       LOAD CART
+    ===================================================== */
 
-    try {
+    useEffect(() => {
 
-      const savedCart =
-        JSON.parse(
-          localStorage.getItem("cart") || "[]"
-        );
+        loadCart();
 
-      setCart(
-        Array.isArray(savedCart)
-          ? savedCart
-          : []
-      );
-
-    } catch {
-
-      setCart([]);
-
-    }
-
-  };
-
-
-  /* =====================================================
-     SAVE CART
-  ===================================================== */
-
-  const saveCart = (updatedCart) => {
-
-    setCart(updatedCart);
-
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(updatedCart)
-    );
-
-    window.dispatchEvent(
-      new Event("cartUpdated")
-    );
-
-  };
-
-
-  /* =====================================================
-     UPDATE QUANTITY
-  ===================================================== */
-
-  const updateCartItemQty = (
-    id,
-    delta
-  ) => {
-
-    const updatedCart = cart
-      .map((item) => {
-
-        if (item.id !== id) {
-          return item;
-        }
-
-        const newQuantity =
-          Number(item.quantity) +
-          delta;
-
-        if (newQuantity <= 0) {
-          return null;
-        }
-
-        return {
-          ...item,
-          quantity: newQuantity
+        const handleCartUpdate = () => {
+            loadCart();
         };
 
-      })
-      .filter(Boolean);
+        window.addEventListener(
+            "cartUpdated",
+            handleCartUpdate
+        );
 
-    saveCart(updatedCart);
+        return () => {
 
-  };
+            window.removeEventListener(
+                "cartUpdated",
+                handleCartUpdate
+            );
 
+        };
 
-  /* =====================================================
-     TOTALS
-  ===================================================== */
-
-  const totalCartItems =
-    cart.reduce(
-      (sum, item) =>
-        sum +
-        Number(item.quantity || 0),
-      0
-    );
+    }, []);
 
 
-  const subtotalPrice =
-    cart.reduce(
-      (sum, item) =>
-        sum +
-        Number(item.price || 0) *
-        Number(item.quantity || 0),
-      0
-    );
+    const loadCart = () => {
+
+        try {
+
+            const savedCart =
+                JSON.parse(
+                    localStorage.getItem("cart") || "[]"
+                );
+
+            setCart(
+                Array.isArray(savedCart)
+                    ? savedCart
+                    : []
+            );
+
+        } catch {
+
+            setCart([]);
+
+        }
+
+    };
 
 
-  return (
+    /* =====================================================
+       SAVE CART
+    ===================================================== */
 
-    <div className="cart-page-wrapper">
+    const saveCart = (updatedCart) => {
 
+        setCart(updatedCart);
 
-      {/* =================================================
-          PAGE HEADER
-      ================================================= */}
+        localStorage.setItem(
+            "cart",
+            JSON.stringify(updatedCart)
+        );
 
-      <div className="cart-page-topbar">
+        window.dispatchEvent(
+            new Event("cartUpdated")
+        );
 
-        <Link
-          to="/"
-          className="cart-back-link"
-        >
-          ← Continue Shopping
-        </Link>
-
-        <div className="cart-page-heading">
-
-          <h1>
-            Shopping Cart
-          </h1>
-
-          <span>
-            {totalCartItems}{" "}
-            {totalCartItems === 1
-              ? "item"
-              : "items"}
-          </span>
-
-        </div>
-
-      </div>
+    };
 
 
-      {/* =================================================
-          MAIN CONTENT
-      ================================================= */}
+    /* =====================================================
+       UPDATE QUANTITY
+    ===================================================== */
 
-      <main className="cart-layout">
+    const updateCartItemQty = (
+        id,
+        delta
+    ) => {
+
+        const updatedCart = cart
+            .map((item) => {
+
+                if (item.id !== id) {
+                    return item;
+                }
+
+                const newQuantity =
+                    Number(item.quantity) +
+                    delta;
+
+                if (newQuantity <= 0) {
+                    return null;
+                }
+
+                return {
+                    ...item,
+                    quantity: newQuantity
+                };
+
+            })
+            .filter(Boolean);
+
+        saveCart(updatedCart);
+
+    };
 
 
-        {/* ===============================================
-            LEFT SIDE
-        =============================================== */}
+    /* =====================================================
+       TOTALS
+    ===================================================== */
 
-        <section className="cart-products-area">
+    const totalCartItems =
+        cart.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.quantity || 0),
+            0
+        );
 
-          {cart.length === 0 ? (
 
-            <div className="cart-empty-box">
+    const subtotalPrice =
+        cart.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.price || 0) *
+                Number(item.quantity || 0),
+            0
+        );
 
-              <div className="cart-empty-icon">
-                🛒
-              </div>
 
-              <h2>
-                Your Shopping Bag is Empty
-              </h2>
+    /* =====================================================
+       PAGE
+    ===================================================== */
 
-              <p>
-                Add some delicious Sri Vaarahi
-                Pickles to your bag.
-              </p>
+    return (
 
-              <Link
-                to="/"
-                className="cart-shop-button"
-              >
-                Explore Pickles
-              </Link>
+        <div className="cart-page-wrapper">
+
+
+            {/* =================================================
+                PAGE HEADER
+            ================================================= */}
+
+            <div className="cart-page-topbar">
+
+                <Link
+                    to="/"
+                    className="cart-back-link"
+                >
+                    ← Continue Shopping
+                </Link>
+
+
+                <div className="cart-page-heading">
+
+                    <h1>
+                        Shopping Cart
+                    </h1>
+
+                    <span>
+                        {totalCartItems}{" "}
+                        {totalCartItems === 1
+                            ? "item"
+                            : "items"}
+                    </span>
+
+                </div>
 
             </div>
 
-          ) : (
 
-            <>
+            {/* =================================================
+                MAIN CONTENT
+            ================================================= */}
 
-              <div className="cart-products-heading">
-
-                <h2>
-                  Selected Products
-                </h2>
-
-                <span>
-                  {cart.length} varieties
-                </span>
-
-              </div>
+            <main className="cart-layout">
 
 
-              <div className="cart-products-grid">
+                {/* =============================================
+                    LEFT SIDE
+                ============================================= */}
 
-                {cart.map((item) => (
+                <section className="cart-products-area">
 
-                  <div
-                    key={item.id}
-                    className="cart-product-card"
-                  >
+                    {cart.length === 0 ? (
 
-                    {/* IMAGE */}
+                        <div className="cart-empty-box">
 
-                    <div className="cart-product-image">
-
-                      {item.imageUrl ? (
-
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                        />
-
-                      ) : (
-
-                        <span>
-                          🥒
-                        </span>
-
-                      )}
-
-                    </div>
+                            <div className="cart-empty-icon">
+                                🛒
+                            </div>
 
 
-                    {/* DETAILS */}
-
-                    <div className="cart-product-info">
-
-                      <h3>
-                        {item.name}
-                      </h3>
-
-                      <p>
-                        {item.weight || "Pack"}
-                      </p>
-
-                      <strong>
-                        ₹
-                        {Number(
-                          item.price
-                        ).toLocaleString(
-                          "en-IN"
-                        )}
-                      </strong>
-
-                    </div>
+                            <h2>
+                                Your Shopping Bag is Empty
+                            </h2>
 
 
-                    {/* QUANTITY */}
+                            <p>
+                                Add some delicious Sri Vaarahi
+                                Pickles to your bag.
+                            </p>
 
-                    <div className="cart-product-qty">
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateCartItemQty(
-                            item.id,
-                            -1
-                          )
+                            <Link
+                                to="/"
+                                className="cart-shop-button"
+                            >
+                                Explore Pickles
+                            </Link>
+
+                        </div>
+
+                    ) : (
+
+                        <>
+
+                            <div className="cart-products-heading">
+
+                                <h2>
+                                    Selected Products
+                                </h2>
+
+                                <span>
+                                    {cart.length} varieties
+                                </span>
+
+                            </div>
+
+
+                            <div className="cart-products-grid">
+
+                                {cart.map((item) => (
+
+                                    <div
+                                        key={item.id}
+                                        className="cart-product-card"
+                                    >
+
+
+                                        {/* IMAGE */}
+
+                                        <div className="cart-product-image">
+
+                                            {item.imageUrl ? (
+
+                                                <img
+                                                    src={item.imageUrl}
+                                                    alt={item.name}
+                                                    onError={(event) => {
+                                                        event.currentTarget.style.display =
+                                                            "none";
+                                                    }}
+                                                />
+
+                                            ) : (
+
+                                                <span>
+                                                    🥒
+                                                </span>
+
+                                            )}
+
+                                        </div>
+
+
+                                        {/* DETAILS */}
+
+                                        <div className="cart-product-info">
+
+                                            <h3>
+                                                {item.name}
+                                            </h3>
+
+
+                                            <p>
+                                                {item.weight || "Pack"}
+                                            </p>
+
+
+                                            <strong>
+                                                ₹
+                                                {Number(
+                                                    item.price
+                                                ).toLocaleString(
+                                                    "en-IN"
+                                                )}
+                                            </strong>
+
+                                        </div>
+
+
+                                        {/* QUANTITY */}
+
+                                        <div className="cart-product-qty">
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    updateCartItemQty(
+                                                        item.id,
+                                                        -1
+                                                    )
+                                                }
+                                            >
+                                                −
+                                            </button>
+
+
+                                            <span>
+                                                {item.quantity}
+                                            </span>
+
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    updateCartItemQty(
+                                                        item.id,
+                                                        1
+                                                    )
+                                                }
+                                            >
+                                                +
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                ))}
+
+                            </div>
+
+                        </>
+
+                    )}
+
+                </section>
+
+
+                {/* =============================================
+                    RIGHT SIDE CART DRAWER
+                ============================================= */}
+
+                <aside className="cart-right-panel">
+
+                    <CartDrawer
+                        isOpen={true}
+                        onClose={() => {}}
+                        cart={cart}
+                        totalCartItems={totalCartItems}
+                        subtotalPrice={subtotalPrice}
+                        updateCartItemQty={
+                            updateCartItemQty
                         }
-                      >
-                        −
-                      </button>
+                        embedded={true}
+                    />
 
-                      <span>
-                        {item.quantity}
-                      </span>
+                </aside>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateCartItemQty(
-                            item.id,
-                            1
-                          )
-                        }
-                      >
-                        +
-                      </button>
+            </main>
 
-                    </div>
+        </div>
 
-                  </div>
+    );
 
-                ))}
-
-              </div>
-
-            </>
-
-          )}
-
-        </section>
-
-
-        {/* ===============================================
-            RIGHT SIDE CART DRAWER
-        =============================================== */}
-
-        <aside className="cart-right-panel">
-
-          <CartDrawer
-            isOpen={true}
-            onClose={() => {}}
-            cart={cart}
-            totalCartItems={totalCartItems}
-            subtotalPrice={subtotalPrice}
-            updateCartItemQty={updateCartItemQty}
-            embedded={true}
-          />
-
-        </aside>
-
-      </main>
-
-    </div>
-
-  );
 }
