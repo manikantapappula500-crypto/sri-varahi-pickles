@@ -8,7 +8,8 @@ export default function CartDrawer({
   cart,
   totalCartItems,
   subtotalPrice,
-  updateCartItemQty
+  updateCartItemQty,
+  embedded = false
 }) {
   if (!isOpen) return null;
 
@@ -17,10 +18,21 @@ export default function CartDrawer({
   };
 
   return (
-    <div className="cart-drawer-overlay" onClick={onClose}>
+    <div
+      className={
+        embedded
+          ? "cart-drawer-embedded-wrap"
+          : "cart-drawer-overlay"
+      }
+      onClick={embedded ? undefined : onClose}
+    >
 
       <aside
-        className="cart-drawer"
+        className={
+          embedded
+            ? "cart-drawer cart-drawer-embedded"
+            : "cart-drawer"
+        }
         onClick={(e) => e.stopPropagation()}
       >
 

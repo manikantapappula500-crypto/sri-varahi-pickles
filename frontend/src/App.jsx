@@ -4,6 +4,19 @@ import Home from './pages/Home';
 import Cart from './pages/Cart';
 import Checkout from './components/Checkout';
 import CartDrawer from './components/CartDrawer';
+import './theme.css';
+import AdminLayout from './admin/AdminLayout';
+import AdminLogin from './admin/Login';
+import AdminDashboard from './admin/Dashboard';
+import AdminProducts from './admin/Products';
+import AdminCategories from './admin/Categories';
+import AdminBanners from './admin/Banners';
+import AdminOrders from './admin/Orders';
+
+function AdminGuard({children}) {
+  const token = localStorage.getItem('svp_admin_token');
+  return token ? children : <AdminLogin />;
+}
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -33,6 +46,14 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         {/* Optional: Keep route if user navigates directly to /checkout */}
         <Route path="/checkout" element={<Checkout isOpen={true} onClose={() => {}} cart={cart} />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminGuard><AdminLayout /></AdminGuard>}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="banners" element={<AdminBanners />} />
+          <Route path="orders" element={<AdminOrders />} />
+        </Route>
       </Routes>
 
       {/* Global Cart Drawer */}
