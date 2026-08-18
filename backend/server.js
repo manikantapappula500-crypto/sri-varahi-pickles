@@ -1,7 +1,9 @@
+require("dotenv").config();
+
 const express = require("express");
 const sql = require("mssql");
 const cors = require("cors");
-require("dotenv").config();
+const createAdminRouter = require("./adminRoutes");
 
 const app = express();
 
@@ -20,10 +22,10 @@ app.use(
 // =====================================================
 
 const dbConfig = {
-    user: process.env.DB_USER || "SVP",
-    password: process.env.DB_PASSWORD || "Vaarahi@#789123",
-    server: process.env.DB_SERVER || "srivarahipickles-2025.database.windows.net",
-    database: process.env.DB_NAME || "srivarahidb",
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    server: process.env.DB_SERVER,
+    database: process.env.DB_NAME,
     options: {
         encrypt: true, // Required for Azure SQL
         trustServerCertificate: false 
@@ -587,6 +589,32 @@ app.post("/api/orders/checkout", async (req, res) => {
         });
     }
 });
+
+
+// =====================================================
+// PUBLIC BANNERS
+// =====================================================
+app.get("/api/banners", async (req, res) => {
+    try {
+        const pool = await getDbPool();
+        const result = await pool.request().query(`
+            SELECT Id,Title,Subtitle,ImageUrl,MobileImageUrl,ButtonText,ButtonLink,DisplayOrder
+            FROM Banners
+            WHERE IsActive=1
+              AND (StartDate IS NULL OR StartDate <= GETUTCDATE())
+              AND (EndDate IS NULL OR EndDate >= GETUTCDATE())
+            ORDER BY DisplayOrder,Id
+        `);
+        res.json(result.recordset);
+    } catch (err) {
+        res.status(500).json({success:false,message:"Failed to fetch banners"});
+    }
+});
+
+// =====================================================
+// ADMIN API
+// =====================================================
+app.use("/api/admin", createAdminRouter(getDbPool));
 
 // =====================================================
 // 404 HANDLER
